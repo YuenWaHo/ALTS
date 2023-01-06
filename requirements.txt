@@ -5,6 +5,5 @@ pandas
 numpy
 matplotlib
 datetime
-matplotlib.dates
 streamlit
 bokeh
