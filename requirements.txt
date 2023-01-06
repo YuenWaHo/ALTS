@@ -1,0 +1,10 @@
+streamlit
+pandas
+numpy
+pandas
+numpy
+matplotlib.pyplot
+datetime
+matplotlib.dates
+streamlit
+bokeh
