@@ -439,7 +439,7 @@ p_spl = figure(width=1000, height=200, x_axis_label='Datetime', y_axis_label='SP
         background_fill_color="#fafafa", x_axis_type='datetime', x_range=(dates[0], dates[round(len(dff)/10)]),
         tools=TOOLS, tooltips=TOOLTIPS)
 p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='blue', line_width=0, source=spl_dff)
-p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=spl_dfr)
+p_spl.circle(x='datetime',  y='SPL1B', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=spl_dfr)
 st.bokeh_chart(p_spl)
 
 # p_splr = figure(width=1000, height=150, x_axis_label='Datetime', y_axis_label='SPL Ratio',
