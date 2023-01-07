@@ -430,10 +430,8 @@ dates = np.array(dff_filtered['datetime'], dtype=np.datetime64)
 TOOLTIPS = [("time", "@{time}{0.0000f}")]
 TOOLS = "hover,pan,wheel_zoom,box_zoom,reset,save, lasso_select"
 
-spl_dff = dict(dff)
-spl_dff = ColumnDataSource(spl_dff)
-spl_dfr = dict(dfr)
-spl_dfr = ColumnDataSource(spl_dfr)
+spl_dff = ColumnDataSource(dict(dff[['datetime', 'SPL1']]))
+spl_dfr = ColumnDataSource(dict(dfr[['datetime', 'SPL1B']]))
 # SPL
 p_spl = figure(width=1000, height=200, x_axis_label='Datetime', y_axis_label='SPL (relative to Pa)',
         background_fill_color="#fafafa", x_axis_type='datetime', x_range=(dates[0], dates[round(len(dff)/10)]),
@@ -442,12 +440,9 @@ p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='blue', line
 p_spl.circle(x='datetime',  y='SPL1B', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=spl_dfr)
 st.bokeh_chart(p_spl)
 
-splr_dff = dff.copy()
-splr_dfr = dfr.copy()
-splr_dff = dict(splr_dff)
-splr_dff = ColumnDataSource(splr_dff)
-splr_dfr = dict(splr_dfr)
-splr_dfr = ColumnDataSource(splr_dfr)
+splr_dff = ColumnDataSource(dict(dff[['datetime', 'SPLR']]))
+splr_dfr = ColumnDataSource(dict(dfr[['datetime', 'SPLR']]))
+
 p_splr = figure(width=1000, height=150, x_axis_label='Datetime', y_axis_label='SPL Ratio',
             tools=TOOLS, background_fill_color="#fafafa", x_axis_type='datetime', y_range=(0, 1.5), x_range=p_spl.x_range)
 p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='blue', line_width=0, source=splr_dff)
