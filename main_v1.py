@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import datetime as dt
 import matplotlib.dates as mdates
 from bokeh.layouts import column, gridplot
-from bokeh.plotting import figure, show, output_file, save
+from bokeh.plotting import figure, show, output_file, save, reset_output, output_notebook
 from bokeh.models import ColumnDataSource, RangeTool, Span, HoverTool, Slider, DataTable, TableColumn, SelectEditor, NumberFormatter
 pd.set_option('display.float_format', '{:.5f}'.format)
 
@@ -292,7 +292,7 @@ class alts_plot:
         if atag==2:        
             dfr_filtered = dfr[abs(dfr['tdB'])>3]
         dates = np.array(dff_filtered['datetime'], dtype=np.datetime64)
-        ################################################################
+
         data = dict(dff_filtered)
         data = ColumnDataSource(data)
         if atag==2:
@@ -306,10 +306,12 @@ class alts_plot:
                 tools=TOOLS, tooltips=TOOLTIPS)
         p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='blue', line_width=0, source=data)
         ################################################################
+        splr_df = dict(dff_filtered)
+        splr_data = ColumnDataSource(splr_df)
         # SPL Ratio
         p_splr = figure(width=1000, height=150, x_axis_label='Datetime', y_axis_label='SPL Ratio',
                 tools=TOOLS, background_fill_color="#fafafa", x_axis_type='datetime', y_range=(0, 1.5), x_range=p_spl.x_range)
-        p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='blue', line_width=0, source=data)
+        p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='blue', line_width=0, source=splr_data)
         # Horizontal line
         # hline1 = Span(location=1.5, dimension='width', line_color='red', line_width=1)
         hline2 = Span(location=0.8, dimension='width', line_color='red', line_width=1)
@@ -351,9 +353,52 @@ class alts_plot:
         # time_change = Slider(start=0.1, end=0.2, value=0.15, step=0.001, title='Time Change')
         ################################################################
         show(column(p_spl, p_splr, p_td, select,  p_pulint))
+        # plot1 = st.bokeh_chart(p_spl, use_container_width=True)
+        # plot2 = st.bokeh_chart(p_splr, use_container_width=True)
+        # st.bokeh_chart(p_td)
+        # st.bokeh_chart(select)
+        # st.bokeh_chart(p_pulint)
+        # return p_spl, p_splr, p_td, p_pulint, select
+
+    def plot_alts_result2(filtered=True, dff=None, dfr=None, time_diff=0, atag=2):
+        if filtered == True:
+            dff = dff[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
+            if atag==2:
+                dfr = dfr[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
+                dfr.columns = ['datetime', 'SPL1B', 'time', 'SPL2B', 'tdB', 'PulseInterval', 'SPLR']
+        else:
+            dff = dff[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
+            if atag==2:
+                dfr = dfr[['datetime', 'SPL1B', 'time', 'SPL2B', 'tdB', 'PulseInterval', 'SPLR']]
+
+        dff['datetime'] = dff['datetime'] + dt.timedelta(seconds=time_diff)
+        dff['time'] = dff['time'] + time_diff
+        dff_filtered = dff[abs(dff['td'])>=3]
+        if atag==2:        
+            dfr_filtered = dfr[abs(dfr['tdB'])>3]
+        dates = np.array(dff_filtered['datetime'], dtype=np.datetime64)
+
+        data = dict(dff_filtered)
+        data = ColumnDataSource(data)
+        if atag==2:
+            data2 = dict(dfr_filtered)
+            data2 = ColumnDataSource(data2)
+        TOOLTIPS = [("time", "@{time}{0.0000f}")]
+        TOOLS = "hover,pan,wheel_zoom,box_zoom,reset,save, lasso_select"
+
+        # SPL Ratio
+        p_splr = figure(width=1000, height=150, x_axis_label='Datetime', y_axis_label='SPL Ratio',
+                tools=TOOLS, background_fill_color="#fafafa", x_axis_type='datetime', y_range=(0, 1.5)) #, x_range=p_spl.x_range)
+        p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='blue', line_width=0, source=data)
+        # Horizontal line
+        # hline1 = Span(location=1.5, dimension='width', line_color='red', line_width=1)
+        hline2 = Span(location=0.8, dimension='width', line_color='red', line_width=1)
+        p_splr.renderers.extend([hline2]) #hline1
+        st.bokeh_chart(p_splr, use_container_width=True)
 
 
 st.title('Acoustic Line Transect Analysis Toolkit')
+st.markdown("The site can be used to visualize acoustic line-transect data." )
 
 uploaded_file_front_atag = st.file_uploader("Front A-tag csv file")
 if uploaded_file_front_atag is not None:
@@ -376,5 +421,7 @@ else:
 
 if st.button('Plot Result', key='plot_result'):
     alts_plot.plot_alts_result(filtered=False, dff=dff, dfr=dfr, time_diff=0, atag=2)
+    # alts_plot.plot_alts_result2(filtered=False, dff=dff, dfr=dfr, time_diff=0, atag=2)
+
 else:
     st.write('Process again')
