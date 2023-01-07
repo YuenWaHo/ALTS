@@ -388,11 +388,19 @@ if st.checkbox('Process A-tag data'):
 else:
     st.write('Please upload file again')
 
+
+st.write(dff)
+st.write(dfr)
+st.write('')
+st.write('')
+st.write('')
+
 filtered_button = st.checkbox('Filtered')
 number_atag = st.checkbox('2 A-tags')
 front_atag_time = st.number_input('Insert front A-tag time')
 back_atag_time = st.number_input('Insert back A-tag time')
 time_diff = back_atag_time - front_atag_time
+
 
 if st.button('Plot Result', key='plot_result'):
     if filtered_button:
