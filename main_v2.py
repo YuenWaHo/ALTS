@@ -413,7 +413,7 @@ with col2:
 if filtered_button:
     dff = dff[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
     if number_atag:
-        dfr = dfr[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
+        dfr = dfr[['datetime', 'SPL1B', 'time', 'SPL2B', 'tdB', 'PulseInterval', 'SPLR']]
         dfr.columns = ['datetime', 'SPL1B', 'time', 'SPL2B', 'tdB', 'PulseInterval', 'SPLR']
 else:
     dff = dff[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
