@@ -442,9 +442,11 @@ p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='blue', line
 p_spl.circle(x='datetime',  y='SPL1B', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=spl_dfr)
 st.bokeh_chart(p_spl)
 
-splr_dff = dict(dff)
+splr_dff = dff.copy()
+splr_dfr = dfr.copy()
+splr_dff = dict(splr_dff)
 splr_dff = ColumnDataSource(splr_dff)
-splr_dfr = dict(dfr)
+splr_dfr = dict(splr_dfr)
 splr_dfr = ColumnDataSource(splr_dfr)
 p_splr = figure(width=1000, height=150, x_axis_label='Datetime', y_axis_label='SPL Ratio',
             tools=TOOLS, background_fill_color="#fafafa", x_axis_type='datetime', y_range=(0, 1.5), x_range=p_spl.x_range)
