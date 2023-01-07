@@ -402,43 +402,40 @@ back_atag_time = st.number_input('Insert back A-tag time')
 time_diff = back_atag_time - front_atag_time
 
 
-if st.button('Plot Result', key='plot_result'):
-    if filtered_button:
-        dff = dff[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
-        if number_atag:
-            dfr = dfr[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
-            dfr.columns = ['datetime', 'SPL1B', 'time', 'SPL2B', 'tdB', 'PulseInterval', 'SPLR']
-    else:
-        dff = dff[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
-        if number_atag:
-            dfr = dfr[['datetime', 'SPL1B', 'time', 'SPL2B', 'tdB', 'PulseInterval', 'SPLR']]
 
-    dff['datetime'] = dff['datetime'] + dt.timedelta(seconds=time_diff)
-    dff['time'] = dff['time'] + time_diff
-    dff_filtered = dff[abs(dff['td'])>=3]
-    if number_atag:        
-        dfr_filtered = dfr[abs(dfr['tdB'])>3]
-    dates = np.array(dff_filtered['datetime'], dtype=np.datetime64)
-
-    TOOLTIPS = [("time", "@{time}{0.0000f}")]
-    TOOLS = "hover,pan,wheel_zoom,box_zoom,reset,save, lasso_select"
-    # SPL
-    p_spl = figure(width=1000, height=200, x_axis_label='Datetime', y_axis_label='SPL (relative to Pa)',
-            background_fill_color="#fafafa", x_axis_type='datetime', x_range=(dates[0], dates[round(len(dff)/10)]),
-            tools=TOOLS, tooltips=TOOLTIPS)
-    p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='blue', line_width=0, source=dff)
-    p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=dfr)
-    st.bokeh_chart(p_spl)
-
-    p_splr = figure(width=1000, height=150, x_axis_label='Datetime', y_axis_label='SPL Ratio',
-                tools=TOOLS, background_fill_color="#fafafa", x_axis_type='datetime', y_range=(0, 1.5), x_range=p_spl.x_range)
-    p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='blue', line_width=0, source=dff)
-    p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=dfr)
-    # Horizontal line
-    # hline1 = Span(location=1.5, dimension='width', line_color='red', line_width=1)
-    hline2 = Span(location=0.8, dimension='width', line_color='red', line_width=1)
-    p_splr.renderers.extend([hline2]) #hline1
-    st.bokeh_chart(p_splr)
-
+if filtered_button:
+    dff = dff[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
+    if number_atag:
+        dfr = dfr[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
+        dfr.columns = ['datetime', 'SPL1B', 'time', 'SPL2B', 'tdB', 'PulseInterval', 'SPLR']
 else:
-    st.write('Process again')
+    dff = dff[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
+    if number_atag:
+        dfr = dfr[['datetime', 'SPL1B', 'time', 'SPL2B', 'tdB', 'PulseInterval', 'SPLR']]
+
+dff['datetime'] = dff['datetime'] + dt.timedelta(seconds=time_diff)
+dff['time'] = dff['time'] + time_diff
+dff_filtered = dff[abs(dff['td'])>=3]
+if number_atag:        
+    dfr_filtered = dfr[abs(dfr['tdB'])>3]
+dates = np.array(dff_filtered['datetime'], dtype=np.datetime64)
+
+TOOLTIPS = [("time", "@{time}{0.0000f}")]
+TOOLS = "hover,pan,wheel_zoom,box_zoom,reset,save, lasso_select"
+# SPL
+p_spl = figure(width=1000, height=200, x_axis_label='Datetime', y_axis_label='SPL (relative to Pa)',
+        background_fill_color="#fafafa", x_axis_type='datetime', x_range=(dates[0], dates[round(len(dff)/10)]),
+        tools=TOOLS, tooltips=TOOLTIPS)
+p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='blue', line_width=0, source=dff)
+p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=dfr)
+st.bokeh_chart(p_spl)
+
+p_splr = figure(width=1000, height=150, x_axis_label='Datetime', y_axis_label='SPL Ratio',
+            tools=TOOLS, background_fill_color="#fafafa", x_axis_type='datetime', y_range=(0, 1.5), x_range=p_spl.x_range)
+p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='blue', line_width=0, source=dff)
+p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=dfr)
+# Horizontal line
+# hline1 = Span(location=1.5, dimension='width', line_color='red', line_width=1)
+hline2 = Span(location=0.8, dimension='width', line_color='red', line_width=1)
+p_splr.renderers.extend([hline2]) #hline1
+st.bokeh_chart(p_splr)
