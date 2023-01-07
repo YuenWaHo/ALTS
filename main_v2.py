@@ -442,12 +442,12 @@ p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='blue', line
 p_spl.circle(x='datetime',  y='SPL1B', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=spl_dfr)
 st.bokeh_chart(p_spl)
 
-# p_splr = figure(width=1000, height=150, x_axis_label='Datetime', y_axis_label='SPL Ratio',
-#             tools=TOOLS, background_fill_color="#fafafa", x_axis_type='datetime', y_range=(0, 1.5), x_range=p_spl.x_range)
-# p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='blue', line_width=0, source=dff)
-# p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=dfr)
-# # Horizontal line
-# # hline1 = Span(location=1.5, dimension='width', line_color='red', line_width=1)
-# hline2 = Span(location=0.8, dimension='width', line_color='red', line_width=1)
-# p_splr.renderers.extend([hline2]) #hline1
-# st.bokeh_chart(p_splr)
+p_splr = figure(width=1000, height=150, x_axis_label='Datetime', y_axis_label='SPL Ratio',
+            tools=TOOLS, background_fill_color="#fafafa", x_axis_type='datetime', y_range=(0, 1.5), x_range=p_spl.x_range)
+p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='blue', line_width=0, source=spl_dff)
+p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=spl_dfr)
+# Horizontal line
+# hline1 = Span(location=1.5, dimension='width', line_color='red', line_width=1)
+hline2 = Span(location=0.8, dimension='width', line_color='red', line_width=1)
+p_splr.renderers.extend([hline2]) #hline1
+st.bokeh_chart(p_splr)
