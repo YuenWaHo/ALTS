@@ -9,7 +9,7 @@ import matplotlib.dates as mdates
 from bokeh.layouts import column, gridplot
 from bokeh.plotting import figure, show, output_file, save, reset_output, output_notebook
 from bokeh.models import ColumnDataSource, RangeTool, Span, HoverTool, Slider, DataTable, TableColumn, SelectEditor, NumberFormatter
-pd.set_option('display.float_format', '{:.5f}'.format)
+pd.set_option('display.float_format', '{:.000f}'.format)
 
 class alts_load:
     def alts_analysis(atag=2):
@@ -388,10 +388,11 @@ if st.checkbox('Process A-tag data'):
 else:
     st.write('Please upload file again')
 
-
-st.write(dff)
-st.write(dfr)
-st.write('')
+col1, col2 = st.columns(2)
+with col1:
+    st.write(dff)
+with col2:
+    st.write(dfr)
 st.write('')
 st.write('')
 
@@ -428,20 +429,25 @@ dates = np.array(dff_filtered['datetime'], dtype=np.datetime64)
 
 TOOLTIPS = [("time", "@{time}{0.0000f}")]
 TOOLS = "hover,pan,wheel_zoom,box_zoom,reset,save, lasso_select"
+
+spl_dff = dict(dff)
+spl_dff = ColumnDataSource(spl_dff)
+spl_dfr = dict(dfr)
+spl_dfr = ColumnDataSource(spl_dfr)
 # SPL
 p_spl = figure(width=1000, height=200, x_axis_label='Datetime', y_axis_label='SPL (relative to Pa)',
         background_fill_color="#fafafa", x_axis_type='datetime', x_range=(dates[0], dates[round(len(dff)/10)]),
         tools=TOOLS, tooltips=TOOLTIPS)
-p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='blue', line_width=0, source=dff)
-p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=dfr)
+p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='blue', line_width=0, source=spl_dff)
+p_spl.circle(x='datetime',  y='SPL1', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=spl_dfr)
 st.bokeh_chart(p_spl)
 
-p_splr = figure(width=1000, height=150, x_axis_label='Datetime', y_axis_label='SPL Ratio',
-            tools=TOOLS, background_fill_color="#fafafa", x_axis_type='datetime', y_range=(0, 1.5), x_range=p_spl.x_range)
-p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='blue', line_width=0, source=dff)
-p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=dfr)
-# Horizontal line
-# hline1 = Span(location=1.5, dimension='width', line_color='red', line_width=1)
-hline2 = Span(location=0.8, dimension='width', line_color='red', line_width=1)
-p_splr.renderers.extend([hline2]) #hline1
-st.bokeh_chart(p_splr)
+# p_splr = figure(width=1000, height=150, x_axis_label='Datetime', y_axis_label='SPL Ratio',
+#             tools=TOOLS, background_fill_color="#fafafa", x_axis_type='datetime', y_range=(0, 1.5), x_range=p_spl.x_range)
+# p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='blue', line_width=0, source=dff)
+# p_splr.circle(x='datetime',  y='SPLR', size=3, alpha=0.5, fill_color='firebrick', line_width=0, source=dfr)
+# # Horizontal line
+# # hline1 = Span(location=1.5, dimension='width', line_color='red', line_width=1)
+# hline2 = Span(location=0.8, dimension='width', line_color='red', line_width=1)
+# p_splr.renderers.extend([hline2]) #hline1
+# st.bokeh_chart(p_splr)
