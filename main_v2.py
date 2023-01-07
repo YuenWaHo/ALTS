@@ -354,13 +354,14 @@ class alts_plot:
         ################################################################
         # time_change = Slider(start=0.1, end=0.2, value=0.15, step=0.001, title='Time Change')
         ################################################################
-        show(column(p_spl, p_splr, p_td, select,  p_pulint))
-        # plot1 = st.bokeh_chart(p_spl, use_container_width=True)
-        # plot2 = st.bokeh_chart(p_splr, use_container_width=True)
+        # show(column(p_spl, p_splr, p_td, select,  p_pulint))
+        plot1 = st.bokeh_chart(p_spl, use_container_width=True)
+        plot2 = st.bokeh_chart(p_splr, use_container_width=True)
         # st.bokeh_chart(p_td)
         # st.bokeh_chart(select)
         # st.bokeh_chart(p_pulint)
         # return p_spl, p_splr, p_td, p_pulint, select
+        return plot1, plot2
 
     def plot_alts_result2(filtered=True, dff=None, dfr=None, time_diff=0, atag=2):
         if filtered == True:
