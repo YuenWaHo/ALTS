@@ -6,4 +6,4 @@ numpy
 matplotlib
 datetime
 streamlit
-bokeh
+bokeh==2.4.3
