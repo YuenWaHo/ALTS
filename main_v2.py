@@ -395,13 +395,19 @@ st.write('')
 st.write('')
 st.write('')
 
-filtered_button = st.checkbox('Filtered')
-number_atag = st.checkbox('2 A-tags')
-front_atag_time = st.number_input('Insert front A-tag time')
-back_atag_time = st.number_input('Insert back A-tag time')
-time_diff = back_atag_time - front_atag_time
+col1, col2 = st.columns(2)
+with col1:
+    filtered_button = st.checkbox('Filtered')
+with col2:
+    number_atag = st.checkbox('2 A-tags')
 
-
+col1, col2 = st.columns(2)
+with col1:
+    front_atag_time = st.number_input('Insert front A-tag time')
+with col2:
+    back_atag_time = st.number_input('Insert back A-tag time')
+    time_diff = back_atag_time - front_atag_time
+    st.write(time_diff)
 
 if filtered_button:
     dff = dff[['datetime', 'SPL1', 'time', 'SPL2', 'td', 'PulseInterval', 'SPLR']]
