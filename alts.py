@@ -135,7 +135,10 @@ class alts_load:
         elif len(df.columns) == 5:
             # Process as five-column DataFrame
             df.columns = ['date', 'time', 'SPL1', 'SPL2', 'td']
-            df['datetime'] = pd.to_datetime(df['date'] + ' ' + df['time'], format='%m/%d/%Y %H:%M:%S')
+            df['date'] = pd.to_datetime(df['date'], format='%m/%d/%Y')
+            df['time'] = pd.to_timedelta(df['time'].astype(float), unit='s')
+            df['datetime'] = df['date'] + df['time']
+        
         
         # Common processing for both DataFrame types
         df = alts_load.split_datetime(df)
@@ -431,7 +434,7 @@ class alts_plot:
 
         # Statistics display
         stats_div = Div(width=1000)
-
+        # Define the CustomJS callback as a Python string
         data.selected.js_on_change('indices', CustomJS(args=dict(source=data, stats_div=stats_div), code="""
             const inds = cb_obj.indices;
             const data = source.data;
@@ -458,10 +461,39 @@ class alts_plot:
                 Mean SPL2: ${mean_SPL2.toFixed(2)}<br>
                 SPL Ratio: ${SPL_ratio.toFixed(2)}<br>                                                       
                 Mean Pulse Interval: ${mean_PI.toFixed(2)} ms<br>
-                Count: ${count}
-            `;
-        """))
-        show(row(column(p_spl, p_splr, p_td, select, p_pulint), stats_div))
+                Count: ${count}`;"""))
+
+        stats_div2 = Div(width=1000)
+        # Define the CustomJS callback as a Python string
+        data.selected.js_on_change('indices', CustomJS(args=dict(source=data2, stats_div=stats_div2), code="""
+            const inds = cb_obj.indices;
+            const data = source.data;
+            const datetime = data['datetime'];
+            const SPL1 = data['SPL1'];
+            const SPL2 = data['SPL2'];
+            const PulseInterval = data['PulseInterval'];
+            let sum_SPL1 = 0;
+            let sum_SPL2 = 0;
+            let sum_PI = 0;
+            let count = inds.length;
+            for (let i = 0; i < count; i++) {
+                sum_SPL1 += SPL1[inds[i]];
+                sum_SPL2 += SPL2[inds[i]];
+                sum_PI += PulseInterval[inds[i]];
+            }
+            let mean_SPL1 = sum_SPL1 / count;
+            let mean_SPL2 = sum_SPL2 / count;
+            let SPL_ratio = mean_SPL1 / mean_SPL2;
+            let mean_PI = sum_PI / count;
+            stats_div.text = `
+                <b>Selected Points Statistics:</b><br>
+                Mean SPL1: ${mean_SPL1.toFixed(2)}<br>
+                Mean SPL2: ${mean_SPL2.toFixed(2)}<br>
+                SPL Ratio: ${SPL_ratio.toFixed(2)}<br>                                                       
+                Mean Pulse Interval: ${mean_PI.toFixed(2)} ms<br>
+                Count: ${count}`;"""))
+
+        show(row(column(p_spl, p_splr, p_td, select, p_pulint), column(stats_div, stats_div2)))
 
     def spl_time_plot(dff, dfr):
         fig, axs = plt.subplots(1, 2, figsize=(15, 5))
@@ -501,17 +533,17 @@ class alts_plot:
     def spl_distribution_plot(df):
         fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 5))
         axs[0] = plt.subplot(131)
-        sns.histplot(x='SPL1', data=df, ax=axs[0], binwidth=20)
+        sns.histplot(x='SPL1', data=df, ax=axs[0], binwidth=50, edgecolor='black')
         plt.title('SPL1')
 
         axs[1] = plt.subplot(132)
-        sns.histplot(x='SPL2', data=df, ax=axs[1], binwidth=20)
+        sns.histplot(x='SPL2', data=df, ax=axs[1], binwidth=50, edgecolor='black')
         plt.title('SPL2')
 
         axs[2] = plt.subplot(133)
-        sns.histplot(x='SPLR', data=df, ax=axs[2], binwidth=0.05)
+        sns.histplot(x='SPLR', data=df, ax=axs[2], edgecolor='black')
         plt.xlim(0, 2)
-        plt.title('SPLR')
+        plt.title('SPL ratio')
         plt.tight_layout
         plt.show()
 
