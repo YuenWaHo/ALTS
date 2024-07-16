@@ -3,10 +3,10 @@ import numpy as np
 import tkinter as tk
 from tkinter import filedialog
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-import bokeh
 import seaborn as sns
+import matplotlib.dates as mdates
 import datetime as dt
+import bokeh
 from bokeh.layouts import column, gridplot, row
 from bokeh.plotting import figure, show, output_file, save
 from bokeh.models import ColumnDataSource, RangeTool, Span, HoverTool, Slider, DataTable, TableColumn, SelectEditor, NumberFormatter, Div, CustomJS
@@ -14,15 +14,7 @@ from bokeh.io import show
 pd.set_option('display.float_format', '{:.5f}'.format)
 
 class check_version:
-    def print_versions():
-        import sys
-        print('Python Version:', sys.version)
-        print("\nPandas version:", pd.__version__)
-        print("NumPy version:", np.__version__)
-        print("tkinter version:", tk.TkVersion)
-        print("Seaborn version:", sns.__version__)
-        print("Bokeh version:", bokeh.__version__)
-
+    def print_requirement():
         # Installation instructions for the colleague
         print("\n#########  \nPlease ensure you have the following versions installed:")
         print("Pandas version: 1.5.2")
@@ -30,14 +22,26 @@ class check_version:
         print("tkinter version: 8.5")
         print("Matplotlib version: 3.6.2")
         print("Seaborn version: 0.12.1")
-        print("Bokeh version: 3.0.3\n#########")
+        print("Bokeh version: 3.0.3")
 
         print("\nTo install these versions, you can use the following commands:")
         print("pip install pandas==1.5.2")
         print("pip install numpy==1.24.1")
+        print("pip install tkinter==8.5")
         print("pip install matplotlib==3.6.2")
         print("pip install seaborn==0.12.1")
         print("pip install bokeh==3.0.3")
+
+
+    def print_versions():
+        import sys
+        print('\n#########  \n')
+        print('Python Version:', sys.version)
+        print("\nPandas version:", pd.__version__)
+        print("NumPy version:", np.__version__)
+        print("tkinter version:", tk.TkVersion)
+        print("Seaborn version:", sns.__version__)
+        print("Bokeh version:", bokeh.__version__)
 
 class alts_load:
     """
@@ -434,66 +438,53 @@ class alts_plot:
 
         # Statistics display
         stats_div = Div(width=1000)
-        # Define the CustomJS callback as a Python string
-        data.selected.js_on_change('indices', CustomJS(args=dict(source=data, stats_div=stats_div), code="""
-            const inds = cb_obj.indices;
-            const data = source.data;
-            const datetime = data['datetime'];
-            const SPL1 = data['SPL1'];
-            const SPL2 = data['SPL2'];
-            const PulseInterval = data['PulseInterval'];
-            let sum_SPL1 = 0;
-            let sum_SPL2 = 0;
-            let sum_PI = 0;
-            let count = inds.length;
-            for (let i = 0; i < count; i++) {
-                sum_SPL1 += SPL1[inds[i]];
-                sum_SPL2 += SPL2[inds[i]];
-                sum_PI += PulseInterval[inds[i]];
-            }
-            let mean_SPL1 = sum_SPL1 / count;
-            let mean_SPL2 = sum_SPL2 / count;
-            let SPL_ratio = mean_SPL1 / mean_SPL2;
-            let mean_PI = sum_PI / count;
-            stats_div.text = `
-                <b>Selected Points Statistics:</b><br>
-                Mean SPL1: ${mean_SPL1.toFixed(2)}<br>
-                Mean SPL2: ${mean_SPL2.toFixed(2)}<br>
-                SPL Ratio: ${SPL_ratio.toFixed(2)}<br>                                                       
-                Mean Pulse Interval: ${mean_PI.toFixed(2)} ms<br>
-                Count: ${count}`;"""))
+        stats_div2 = Div(width=1000) if atag == 2 else None
 
-        stats_div2 = Div(width=1000)
-        # Define the CustomJS callback as a Python string
-        data.selected.js_on_change('indices', CustomJS(args=dict(source=data2, stats_div=stats_div2), code="""
-            const inds = cb_obj.indices;
-            const data = source.data;
-            const datetime = data['datetime'];
-            const SPL1 = data['SPL1'];
-            const SPL2 = data['SPL2'];
-            const PulseInterval = data['PulseInterval'];
-            let sum_SPL1 = 0;
-            let sum_SPL2 = 0;
-            let sum_PI = 0;
-            let count = inds.length;
-            for (let i = 0; i < count; i++) {
-                sum_SPL1 += SPL1[inds[i]];
-                sum_SPL2 += SPL2[inds[i]];
-                sum_PI += PulseInterval[inds[i]];
-            }
-            let mean_SPL1 = sum_SPL1 / count;
-            let mean_SPL2 = sum_SPL2 / count;
-            let SPL_ratio = mean_SPL1 / mean_SPL2;
-            let mean_PI = sum_PI / count;
-            stats_div.text = `
-                <b>Selected Points Statistics:</b><br>
-                Mean SPL1: ${mean_SPL1.toFixed(2)}<br>
-                Mean SPL2: ${mean_SPL2.toFixed(2)}<br>
-                SPL Ratio: ${SPL_ratio.toFixed(2)}<br>                                                       
-                Mean Pulse Interval: ${mean_PI.toFixed(2)} ms<br>
-                Count: ${count}`;"""))
+        # CustomJS for updating statistics
+        stats_code = """
+        const inds = cb_obj.indices;
+        const data = source.data;
+        let sum_SPL1 = 0, sum_SPL2 = 0, sum_PI = 0, count = inds.length;
+        let smallest_time = null; // Initialize to store the smallest time value
 
-        show(row(column(p_spl, p_splr, p_td, select, p_pulint), column(stats_div, stats_div2)))
+        for (let i = 0; i < count; i++) {
+            sum_SPL1 += data['SPL1'][inds[i]];
+            sum_SPL2 += data['SPL2'][inds[i]];
+            sum_PI += data['PulseInterval'][inds[i]];
+            // Update the smallest time or set it if it's the first comparison
+            if (smallest_time === null || data['time'][inds[i]] < smallest_time) {
+                smallest_time = data['time'][inds[i]];
+            }
+        }
+
+        const mean_SPL1 = sum_SPL1 / count;
+        const mean_SPL2 = sum_SPL2 / count;
+        const SPL_ratio = mean_SPL1 / mean_SPL2;
+        const mean_PI = sum_PI / count;
+
+        // Prepare display text for the smallest time
+        let time_text = smallest_time !== null ? `Time: ${smallest_time}<br>` : "";
+
+        stats_div.text = `<b>Selected Points Statistics:</b><br>
+                        ${time_text}
+                        Mean SPL1: ${mean_SPL1.toFixed(2)}<br>
+                        Mean SPL2: ${mean_SPL2.toFixed(2)}<br>
+                        SPL Ratio: ${SPL_ratio.toFixed(2)}<br>
+                        Mean Pulse Interval: ${mean_PI.toFixed(2)} ms<br>
+                        Count: ${count}`;
+        """
+
+        data.selected.js_on_change('indices', CustomJS(args={'source': data, 'stats_div': stats_div}, code=stats_code))
+        if atag == 2:
+            data2.selected.js_on_change('indices', CustomJS(args={'source': data2, 'stats_div': stats_div2}, code=stats_code))
+
+        # Layout
+        if atag == 1:
+            layout = row(column(p_spl, p_splr, p_td, select, p_pulint), column(stats_div))
+        if atag == 2:
+            layout = row(column(p_spl, p_splr, p_td, select, p_pulint), column(stats_div, stats_div2))
+
+        show(layout)
 
     def spl_time_plot(dff, dfr):
         fig, axs = plt.subplots(1, 2, figsize=(15, 5))
@@ -530,21 +521,21 @@ class alts_plot:
         plt.ylabel('Average SPL1')
         plt.show()
 
-    def spl_distribution_plot(df):
+    def spl_distribution_plot(df, xlim_SPLR=None, binwidth_SPLR=None):
+        df_clean = df[np.isfinite(df['SPLR'])]
         fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(18, 5))
-        axs[0] = plt.subplot(131)
-        sns.histplot(x='SPL1', data=df, ax=axs[0], binwidth=50, edgecolor='black')
-        plt.title('SPL1')
+        
+        sns.histplot(x='SPL1', data=df_clean, ax=axs[0], binwidth=50, edgecolor='black')
+        axs[0].set_title('SPL1')
 
-        axs[1] = plt.subplot(132)
-        sns.histplot(x='SPL2', data=df, ax=axs[1], binwidth=50, edgecolor='black')
-        plt.title('SPL2')
+        sns.histplot(x='SPL2', data=df_clean, ax=axs[1], binwidth=50, edgecolor='black')
+        axs[1].set_title('SPL2')
 
-        axs[2] = plt.subplot(133)
-        sns.histplot(x='SPLR', data=df, ax=axs[2], edgecolor='black')
-        plt.xlim(0, 2)
-        plt.title('SPL ratio')
-        plt.tight_layout
+        axs[2].hist(df_clean['SPLR'], bins=100, binwidth=binwidth_SPLR if binwidth_SPLR else 0.5, edgecolor='black')
+        axs[2].set_xlim(xlim_SPLR if xlim_SPLR else (0, 2))
+        axs[2].set_title('SPL ratio')
+
+        plt.tight_layout()
         plt.show()
 
     def spl_cross_corr(df):
