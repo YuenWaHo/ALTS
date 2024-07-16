@@ -531,7 +531,7 @@ class alts_plot:
         sns.histplot(x='SPL2', data=df_clean, ax=axs[1], binwidth=50, edgecolor='black')
         axs[1].set_title('SPL2')
 
-        axs[2].hist(df_clean['SPLR'], bins=100, binwidth=binwidth_SPLR if binwidth_SPLR else 0.5, edgecolor='black')
+        axs[2].hist(df_clean['SPLR'], bins=100, edgecolor='black')
         axs[2].set_xlim(xlim_SPLR if xlim_SPLR else (0, 2))
         axs[2].set_title('SPL ratio')
 
