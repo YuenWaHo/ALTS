@@ -446,14 +446,19 @@ class alts_plot:
         const data = source.data;
         let sum_SPL1 = 0, sum_SPL2 = 0, sum_PI = 0, count = inds.length;
         let smallest_time = null; // Initialize to store the smallest time value
+        let smallest_datetime = null; // Initialize to store the smallest datetime value
 
         for (let i = 0; i < count; i++) {
             sum_SPL1 += data['SPL1'][inds[i]];
             sum_SPL2 += data['SPL2'][inds[i]];
             sum_PI += data['PulseInterval'][inds[i]];
-            // Update the smallest time or set it if it's the first comparison
+            // Update the smallest time
             if (smallest_time === null || data['time'][inds[i]] < smallest_time) {
                 smallest_time = data['time'][inds[i]];
+            }
+            // Update the smallest datetime
+            if (smallest_datetime === null || data['datetime'][inds[i]] < smallest_datetime) {
+                smallest_datetime = data['datetime'][inds[i]];
             }
         }
 
@@ -462,10 +467,12 @@ class alts_plot:
         const SPL_ratio = mean_SPL1 / mean_SPL2;
         const mean_PI = sum_PI / count;
 
-        // Prepare display text for the smallest time
+        // Prepare display text for the smallest time and datetime
         let time_text = smallest_time !== null ? `Time: ${smallest_time}<br>` : "";
+        let datetime_text = smallest_datetime !== null ? `Datetime: ${new Date(smallest_datetime).toLocaleString('en-US', {timeZone: 'UTC'})}<br>` : "";
 
         stats_div.text = `<b>Selected Points Statistics:</b><br>
+                        ${datetime_text}
                         ${time_text}
                         Mean SPL1: ${mean_SPL1.toFixed(2)}<br>
                         Mean SPL2: ${mean_SPL2.toFixed(2)}<br>
@@ -531,9 +538,11 @@ class alts_plot:
         sns.histplot(x='SPL2', data=df_clean, ax=axs[1], binwidth=50, edgecolor='black')
         axs[1].set_title('SPL2')
 
-        axs[2].hist(df_clean['SPLR'], bins=100, edgecolor='black')
+        binwidth_used = binwidth_SPLR if binwidth_SPLR is not None else 0.1
+        axs[2].hist(df_clean['SPLR'], bins=int((df_clean['SPLR'].max() - df_clean['SPLR'].min()) / binwidth_used), edgecolor='black')
         axs[2].set_xlim(xlim_SPLR if xlim_SPLR else (0, 2))
         axs[2].set_title('SPL ratio')
+
 
         plt.tight_layout()
         plt.show()
