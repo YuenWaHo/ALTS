@@ -48,3 +48,46 @@ alts_filter.filter_condition(noise_condition='3')
 # Advanced parameter settings
 alts_filter.filter_condition(noise_condition='4')
 ```
+### Data Visualization
+The toolkit includes several functions for visualizing SPL data:
+- SPL Time Distribution Plot
+```python
+alts_filter.spl_time_distribution_plot(df)
+```
+- SPL Distribution Plot
+```python
+alts_filter.spl_distribution_plot(df)
+```
+- SPL Cross-Correlation Plot
+```python
+alts_filter.spl_cross_corr(df)
+```
+
+### Bokeh Visualization Plot
+The toolkit includes a function for Bokeh visualization of acoustic data results:
+#### `plot_alts_result`
+
+This function visualizes acoustic data using Bokeh. The parameters are:
+- `dff`: DataFrame containing the filtered data.
+- `dfr`: DataFrame containing the raw data.
+- `time_diff`: Time difference parameter.
+- `atag`: Annotation tag for the plot.
+
+Example usage:
+```python
+from alts import alts_visualization
+
+# Assuming dff and dfr are your DataFrames containing filtered and raw data respectively
+alts_visualization.plot_alts_result(dff=dff, dfr=dfr, time_diff=0, atag=2)
+```
+
+
+
+
+
+
+
+
+
+
+
