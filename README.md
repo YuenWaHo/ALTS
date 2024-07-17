@@ -1,8 +1,8 @@
-# Acoustic Analysis Toolkit (alts.py)
+# Acoustic Localization Toolkit using Acoustic-tags
 
 ## Overview
 
-The `alts.py` script is a comprehensive toolkit designed for acoustic data analysis. It provides functionality for calculating pulse intervals, filtering data based on specific conditions, and visualizing sound pressure level (SPL) distributions and cross-correlations. This toolkit is intended for researchers and analysts working with acoustic datasets, particularly those involving marine environments.
+The `alts.py` script is a comprehensive toolkit designed for acoustic line transect analysis with 2 Acoustic Tags. It provides functionality for calculating pulse intervals, filtering data based on specific conditions, and visualizing sound pressure level (SPL) distributions and cross-correlations. This toolkit is intended for researchers and analysts working with acoustic line transect dataset, particularly those involving localization and range detection.
 
 ## Features
 
